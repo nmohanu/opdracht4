@@ -3,19 +3,23 @@
 class Square {
   public:
     char color;
-    Square* buren[8];
+    Square* neighbours[8];
+    Square* next;
     Square ( );
 };
 
 class Board {
   private:
-    Square* ingang;
-    int height, width;
+    Square* entrance;
+    Square* exit;
+    int height = 7;
+    int width = 6;
     // TODO
   public:
     Board ( );
     Board (int width, int height);
-    ~Board ( );
+    ~Board ( ); 
     void print ( );
+    void setNeighbours(Square*);
     // TODO
 };
