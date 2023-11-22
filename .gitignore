@@ -1,0 +1,6 @@
+# VSCode / Codespaces
+.devcontainer/
+.vscode/
+
+# Building
+build/
