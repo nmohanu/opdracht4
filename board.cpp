@@ -47,6 +47,11 @@ void Board::print()
         std::cout << y+1 << " | ";
         for (int x = 0; x < width; x++)
         {
+            if(x == cursor_x && y == cursor_y)
+            {
+                std::cout << " X ";
+                continue;
+            }
             std::cout << ' ' << get_tile(x, y)->color << ' ';
         }
         std::cout << '\n';
