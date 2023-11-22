@@ -99,7 +99,9 @@ void Board::initialize_board()
 }
 
 // initialize_board connected the first tile of each row,
-// based on that, we set the rest of the neighbours for each tile.
+// based on that, we can set the rest of the neighbours for each tile
+// because get_tile first moves down through the most left tiles
+// and then moves right.
 void Board::set_neighbours()
 {
     for(int y = 0; y < height; y++)
