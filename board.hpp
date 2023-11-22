@@ -1,25 +1,24 @@
-// DERIVED FROM EXAMPLE FILE PROVIDED BY TEACHER
-// file board.h
-class Square {
-  public:
+struct Tile
+{
     char color;
-    Square* neighbours[8];
-    Square* next;
-    Square ( );
+    Tile* neighbors[8] {};
+    Tile* next {};
 };
 
-class Board {
-  private:
-    Square* entrance;
-    Square* exit;
+class Board
+{
+private:
+    Tile* top_left_tile;
+
     int height = 7;
     int width = 6;
-    // TODO
-  public:
-    Board ( );
-    Board (int width, int height);
-    ~Board ( ); 
-    void print ( );
-    void setNeighbours(Square*);
-    // TODO
+
+public:
+    Board();
+    Board(int width, int height);
+    ~Board(); 
+
+    Tile* get_tile(int x, int y);
+
+    void print();
 };

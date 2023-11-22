@@ -4,3 +4,6 @@
 
 # Building
 build/
+
+# LSP
+.ccls-cache/

@@ -1,11 +1,10 @@
-// DERIVED FROM EXAMPLE FILE PROVIDED BY TEACHER
-// file main.cc
 #include <iostream>
-#include "board.h"
-using namespace std;
+#include "board.hpp"
 
-int main ( ) {
-  Board board;
-  board.print ( );
-  return 0;
-}//main
+int main()
+{
+    Board board;
+    board.print();
+
+    return 0;
+}

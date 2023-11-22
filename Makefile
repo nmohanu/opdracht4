@@ -1,15 +1,19 @@
 BUILD_DIR=build
 
-.PHONY: always clean
+.PHONY: always clean main.o board.o
 
 $(BUILD_DIR)/gomoku: $(BUILD_DIR)/main.o $(BUILD_DIR)/board.o
 	g++ -o $(BUILD_DIR)/gomoku $(BUILD_DIR)/main.o $(BUILD_DIR)/board.o
 
-$(BUILD_DIR)/main.o: always
-	g++ -o $(BUILD_DIR)/main.o -c main.cc
+main.o: $(BUILD_DIR)/main.o always
 
-$(BUILD_DIR)/board.o: always
-	g++ -o $(BUILD_DIR)/board.o -c board.cc
+$(BUILD_DIR)/main.o: main.cpp
+	g++ -o $(BUILD_DIR)/main.o -c main.cpp
+
+board.o: $(BUILD_DIR)/board.o always
+
+$(BUILD_DIR)/board.o: board.cpp
+	g++ -o $(BUILD_DIR)/board.o -c board.cpp
 
 #
 # Always
