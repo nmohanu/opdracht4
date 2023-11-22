@@ -1,6 +1,6 @@
 struct Tile
 {
-    char color;
+    char color = '#';
     Tile* neighbors[8] {};
     Tile* next {};
 };
@@ -20,5 +20,7 @@ public:
 
     Tile* get_tile(int x, int y);
 
+    void initialize_board();
     void print();
+    void set_neighbours();
 };
