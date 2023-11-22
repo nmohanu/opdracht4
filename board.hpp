@@ -12,8 +12,6 @@ private:
 
     int height = 7;
     int width = 6;
-    int cursor_y = 0;
-    int cursor_x = 0;
 
 public:
     Board();
