@@ -1,6 +1,7 @@
 #include <iostream>
 #include "board.hpp"
 
+
 Board::Board() : Board(3, 3) { }
 
 Board::Board(int width, int height) : width(width), height(height)
@@ -35,7 +36,7 @@ Board::Board(int width, int height) : width(width), height(height)
                 first_in_row = current;
 
             // 0th neighbor.
-            std::cout << "0\n";
+            //std::cout << "0\n";
             if (y > 0)
             {
                 current->neighbors[0] = above;
@@ -45,7 +46,7 @@ Board::Board(int width, int height) : width(width), height(height)
             }
 
             // 1st neighbor.
-            std::cout << "1\n";
+            //std::cout << "1\n";
             if (y > 0 && x < (width - 1))
             {
                 current->neighbors[1] = above->neighbors[2];
@@ -54,7 +55,7 @@ Board::Board(int width, int height) : width(width), height(height)
             }
 
             // 6th neighbor.
-            std::cout << "6\n";
+            //std::cout << "6\n";
             if (x > 0)
             {
                 current->neighbors[6] = previous;
@@ -63,7 +64,7 @@ Board::Board(int width, int height) : width(width), height(height)
             }
 
             // 7th neighbor.
-            std::cout << "7\n";
+            //std::cout << "7\n";
             if (x > 0 && y > 0)
             {
                 current->neighbors[7] = above->neighbors[6];
@@ -83,15 +84,20 @@ Board::~Board()
     // TODO
 }
 
+// Return a tile that is x steps to the right of top left tile 
+// and y steps below top left tile.
 Tile* Board::get_tile(int x, int y)
 {
+    // Select top left tile.
     Tile* current = top_left_tile;
 
+    // Move to the right.
     for (int i = 0; i < x; i++)
     {
         current = current->neighbors[2];
     }
 
+    // Move down.
     for (int j = 0; j < y; j++)
     {
         current = current->neighbors[4];
@@ -100,15 +106,21 @@ Tile* Board::get_tile(int x, int y)
     return current;
 }
 
+// Print the board
 void Board::print()
 {
+    // Print letters (chess board format)
+    std::cout << "    a b c d e f" << std::endl;
+    std::cout << "   +____________" << std::endl;
+
+    // Iterate and print the board tiles.
     for (int y = 0; y < height; y++)
     {
+        std::cout << y+1 << " | ";
         for (int x = 0; x < width; x++)
         {
             std::cout << get_tile(x, y)->color;
         }
-
         std::cout << '\n';
     }
 }
