@@ -1,8 +1,8 @@
 struct Tile
 {
     char color = '#';
+    // Set neighbours, {} sets it to nullptr's (in c++ 11 and later).
     Tile* neighbors[8] {};
-    Tile* next {};
 };
 
 class Board
@@ -10,12 +10,13 @@ class Board
 private:
     Tile* top_left_tile;
 
-    int height = 7;
-    int width = 6;
+    int height;
+    int width;
+    int game_amount;
 
 public:
-    Board();
-    Board(int width, int height);
+
+    Board(int width, int height, int game_amount);
     ~Board(); 
 
     Tile* get_tile(int x, int y);
@@ -23,4 +24,5 @@ public:
     void initialize_board();
     void print();
     void set_neighbours();
+    int get_game_amount();
 };

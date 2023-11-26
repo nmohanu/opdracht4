@@ -1,7 +1,7 @@
 #include <iostream>
 #include "board.hpp"
 
-Board::Board()
+Board::Board(int height, int width, int game_amount) : height(height), width(width), game_amount(game_amount)
 {
     // Initiate tiles
     initialize_board();
@@ -10,6 +10,12 @@ Board::Board()
 Board::~Board()
 {
     // TODO
+}
+
+// Getter for game_amount.
+int Board::get_game_amount()
+{
+    return game_amount;
 }
 
 // Return a tile that is x steps to the right of top left tile 
@@ -38,13 +44,32 @@ Tile* Board::get_tile(int x, int y)
 void Board::print()
 {
     // Print letters (chess board format)
-    std::cout << "     a  b  c  d  e  f" << std::endl;
-    std::cout << "   + _  _  _  _  _  _  " << std::endl;
+    // Print spaces for formatting.
+    std::cout << "     ";
+
+    // Print chess notation letters.
+    for(int x = 0; x < width; x++)
+    {
+        std::cout << char(x + 65) << "  ";
+    }
+    std::cout << std::endl;
+
+    // Print second line.
+    std::cout << "  + ";
+    for(int x = 0; x < width; x++)
+    {
+        std::cout << " _ ";
+    } 
+    std::cout << std::endl;
 
     // Iterate and print the board tiles.
     for (int y = 0; y < height; y++)
     {
-        std::cout << y+1 << " | ";
+        for(int i = 0; i < std::to_string(height).length() - std::to_string(y+1).length(); i++)
+        {
+            std::cout << " ";
+        }
+        std::cout << y+1 << " |";
         for (int x = 0; x < width; x++)
         {
             std::cout << ' ' << get_tile(x, y)->color << ' ';
