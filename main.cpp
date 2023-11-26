@@ -59,6 +59,7 @@ void game_loop(Board board)
         int x = ask_x_coordinate();
         std::cout << "Select y coordinate (1-MAX): " << std::endl;
         int y = ask_int() -1;
+        board.get_tile(x, y)->color = 'X';
     }
 }
 
