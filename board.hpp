@@ -15,14 +15,11 @@ private:
     int game_amount;
 
 public:
-
     Board(int width, int height, int game_amount);
     ~Board(); 
 
     Tile* get_tile(int x, int y);
 
-    void initialize_board();
     void print();
-    void set_neighbours();
     int get_game_amount();
 };

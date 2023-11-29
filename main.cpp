@@ -29,7 +29,11 @@ Board ask_info()
     int width = ask_int();
     std::cout << "Choose the amount of games you would like to play." << std::endl;
     int game_amount = ask_int ();
+
     Board board(height, width, game_amount);
+
+    std::cout << "Lol.";
+
     return board;
 }
 
@@ -46,7 +50,7 @@ int ask_x_coordinate()
 {
     char x;
     std::cin >> x;
-    return int(x) - 65;
+    return int(x) - 'A';
 }
 
 // Game loop.
@@ -58,13 +62,7 @@ void game_loop(Board board)
         std::cout << "Select x coordinate (a-MAX): " << std::endl;
         int x = ask_x_coordinate();
         std::cout << "Select y coordinate (1-MAX): " << std::endl;
-        int y = ask_int() -1;
+        int y = ask_int() - 1;
         board.get_tile(x, y)->color = 'X';
     }
 }
-
-
-
-
-
-
