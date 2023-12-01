@@ -1,3 +1,5 @@
+#include "stack.h"
+
 struct Tile
 {
     char color = '_';
@@ -10,52 +12,6 @@ struct Player
 {
     char color;
     bool is_human = true;
-};
-
-// Turns
-struct Turn
-{
-    int x;
-    int y;
-    Player* player;
-    Turn* next;
-
-    Turn(Player* player, int x, int y) : player(player), x(x), y(y)
-    {
-        next = nullptr;
-    }
-};
-
-class Turn_Queue
-{
-    public:
-        Turn_Queue()
-        {
-            first_out = nullptr;
-        }
-
-        Turn* first_out;
-
-        void push(Turn* turn)
-        {
-            turn->next = first_out;
-            first_out = turn;
-        }
-
-        void delete_first_out()
-        {
-            if(!this->is_empty())
-            {
-                Turn* temp = first_out;
-                first_out = first_out->next;
-                delete temp;
-            }
-        }
-
-        bool is_empty()
-        {
-            return (first_out == nullptr);
-        }
 };
 
 class Board
