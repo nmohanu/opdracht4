@@ -1,29 +1,24 @@
-BUILD_DIR=build
+BUILD_DIR = build
+EXECUTABLE = $(BUILD_DIR)/gomoku
 
-.PHONY: always clean main.o board.o stack.o
+SOURCES = main.cpp board.cpp stack.cpp
+OBJECTS = $(addprefix $(BUILD_DIR)/, $(SOURCES:.cpp=.o))
 
-$(BUILD_DIR)/gomoku: main.o board.o stack.o
-	g++ -o $(BUILD_DIR)/gomoku $(BUILD_DIR)/main.o $(BUILD_DIR)/board.o $(BUILD_DIR)/stack.o
+CXX = g++
+CXXFLAGS = -Wall -Wextra -std=c++11
 
-main.o: $(BUILD_DIR)/main.o always
+all: $(EXECUTABLE)
 
-$(BUILD_DIR)/main.o: main.cpp
-	g++ -o $(BUILD_DIR)/main.o -c main.cpp
+$(EXECUTABLE): $(OBJECTS)
+	$(CXX) $(CXXFLAGS) -o $@ $^
 
-board.o: $(BUILD_DIR)/board.o always
+$(BUILD_DIR)/%.o: %.cpp | always
+	$(CXX) $(CXXFLAGS) -o $@ -c $<
 
-$(BUILD_DIR)/board.o: board.cpp
-	g++ -o $(BUILD_DIR)/board.o -c board.cpp
-
-stack.o: $(BUILD_DIR)/stack.o always
-
-$(BUILD_DIR)/stack.o: stack.cpp
-	g++ -o $(BUILD_DIR)/stack.o -c stack.cpp
-
-#
-# Always
-#
 always:
-	mkdir -p $(BUILD_DIR)
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 
 clean:
+	rm -rf $(BUILD_DIR)
+
+.PHONY: all clean always
