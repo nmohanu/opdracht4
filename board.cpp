@@ -1,7 +1,11 @@
 #include <iostream>
 #include "board.hpp"
 
-Board::Board(int height, int width, int game_amount) : height(height), width(width), game_amount(game_amount)
+Board::Board(){};
+
+Board::Board
+    (int height, int width, int game_amount, Player player_1, Player player_2, int in_a_row) 
+    : height(height), width(width), game_amount(game_amount), player_1(player_1), player_2(player_2), in_a_row(in_a_row)
 {
     // // Initiate tiles
     Tile* first_in_row;
@@ -16,8 +20,6 @@ Board::Board(int height, int width, int game_amount) : height(height), width(wid
         {
             previous = current;
             current = new Tile();
-
-            current->color = '#';
 
             if (y == 0 && x == 0)
                 top_left_tile = current;
@@ -71,10 +73,30 @@ Board::~Board()
     // TODO
 }
 
-// Getter for game_amount.
+// Getters
 int Board::get_game_amount()
 {
     return game_amount;
+}
+
+Player Board::get_player_1()
+{
+    return player_1;
+}
+
+Player Board::get_player_2()
+{
+    return player_2;
+}
+
+int Board::get_width()
+{
+    return width;
+}
+
+int Board::get_height()
+{
+    return height;
 }
 
 // Return a tile that is x steps to the right of top left tile 
@@ -128,7 +150,7 @@ void Board::print()
         {
             std::cout << " ";
         }
-        std::cout << y+1 << " |";
+        std::cout << y+1 << " | ";
         for (int x = 0; x < width; x++)
         {
             std::cout << ' ' << get_tile(x, y)->color << ' ';
