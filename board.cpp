@@ -126,7 +126,10 @@ void Board::print()
 {
     // Print letters (chess board format)
     // Print spaces for formatting.
-    std::cout << "     ";
+    for(int i = 0; i < std::to_string(height).length() + 4; i++)
+    {
+        std::cout << " ";
+    }
 
     // Print chess notation letters.
     for(int x = 0; x < width; x++)
@@ -136,7 +139,11 @@ void Board::print()
     std::cout << std::endl;
 
     // Print second line.
-    std::cout << "  + ";
+    for(int i = 0; i < std::to_string(height).length() + 1; i++)
+    {
+        std::cout << " ";
+    }
+    std::cout << "+ ";
     for(int x = 0; x < width; x++)
     {
         std::cout << " _ ";

@@ -25,6 +25,10 @@ void set_player_type(Player&);
 
 bool check_turn_validity(int, int, Board&);
 
+void register_turn(Board&, Player&, int, int);
+
+void take_back_turn(Board&);
+
 // Main
 int main()
 {
@@ -101,8 +105,6 @@ void game_loop(Board& board)
         // Set current player
         Player current_player = players[turn_count % 2];
 
-        
-
         if(current_player.is_human)
         {
             // Turn info
@@ -123,22 +125,30 @@ void game_loop(Board& board)
 // Human player makes turn.
 void human_turn(Board& board, Player& current_player)
 {
-    std::cout << "Select x coordinate: " << std::endl;
+    std::cout << "Select x coordinate or type 't' to go back a turn: " << std::endl;
     int x = ask_x_coordinate();
-    std::cout << "Select y coordinate: " << std::endl;
-    int y = ask_int() - 1;
-
-    if(check_turn_validity(x, y, board))
+    if(char(x + 'A') == 't')
     {
-        board.get_tile(x, y)->color = current_player.color;
-    }
-    else
-    {
-        std::cout << "This tile is already taken! Please try again." << std::endl;
-        // Try again
+        take_back_turn(board);
         human_turn(board, current_player);
     }
-        
+    else {
+        std::cout << "Select y coordinate: " << std::endl;
+        int y = ask_int() - 1;
+
+        if(check_turn_validity(x, y, board))
+        {
+            board.get_tile(x, y)->color = current_player.color;
+        }
+        else
+        {
+            std::cout << "This tile is already taken! Please try again." << std::endl;
+            // Try again
+            human_turn(board, current_player);
+        }
+
+        register_turn(board, current_player, x, y);
+    }
 }
 
 void computer_turn(Board& board, Player& current_player)
@@ -155,6 +165,7 @@ void computer_turn(Board& board, Player& current_player)
         // Try again
         computer_turn(board, current_player);
     }
+    register_turn(board, current_player, x, y);
 }
 
 // Set player to human or conmputer.
@@ -179,4 +190,35 @@ bool check_turn_validity(int x, int y, Board& board)
     {
         return false;
     }
+}
+
+void register_turn(Board& board, Player& player, int x, int y)
+{
+    Turn* turn = new Turn(&player, x, y);
+    board.turns.push(turn);
+}
+
+void take_back_turn(Board& board)
+{
+    std::cout << "How many turns would you like to go back?" << std::endl;
+    std::cout << "Note: 1 turn takes back the previous turn of BOTH players." << std::endl;
+    int turn_to_take_back = ask_int();
+    int turns_left = turn_to_take_back * 2;
+    while (turns_left > 0)
+    {
+        if(!board.turns.is_empty())
+        {
+            board.get_tile(board.turns.first_out->y, board.turns.first_out->x)->color = '_';
+            board.turns.delete_first_out();
+            turns_left--;
+        }
+        else 
+        {
+            board.print();
+            std::cout << "You selected more turns than possible, but we took back the maximum amount of turns for you." << std::endl;
+            return;
+        }
+    }
+    board.print();
+    std::cout << "We took back " << turn_to_take_back << " turns back for you." << std::endl;
 }

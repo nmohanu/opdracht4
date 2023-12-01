@@ -12,6 +12,52 @@ struct Player
     bool is_human = true;
 };
 
+// Turns
+struct Turn
+{
+    int x;
+    int y;
+    Player* player;
+    Turn* next;
+
+    Turn(Player* player, int x, int y) : player(player), x(x), y(y)
+    {
+        next = nullptr;
+    }
+};
+
+class Turn_Queue
+{
+    public:
+        Turn_Queue()
+        {
+            first_out = nullptr;
+        }
+
+        Turn* first_out;
+
+        void push(Turn* turn)
+        {
+            turn->next = first_out;
+            first_out = turn;
+        }
+
+        void delete_first_out()
+        {
+            if(!this->is_empty())
+            {
+                Turn* temp = first_out;
+                first_out = first_out->next;
+                delete temp;
+            }
+        }
+
+        bool is_empty()
+        {
+            return (first_out == nullptr);
+        }
+};
+
 class Board
 {
 private:
@@ -23,6 +69,7 @@ private:
     int in_a_row;
     Player player_1;
     Player player_2;
+    
 
 public:
     Board();
@@ -32,6 +79,7 @@ public:
     Tile* get_tile(int x, int y);
 
     void print();
+    Turn_Queue turns;
 
     // Getters
     int get_game_amount();
