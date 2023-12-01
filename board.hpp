@@ -1,17 +1,10 @@
-#include "stack.h"
+#include "stack.hpp"
 
 struct Tile
 {
     char color = '_';
     // Set neighbours, {} sets it to nullptr's (in c++ 11 and later).
     Tile* neighbors[8] {};
-};
-
-// Player
-struct Player
-{
-    char color;
-    bool is_human = true;
 };
 
 class Board
