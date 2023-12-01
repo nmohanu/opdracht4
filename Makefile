@@ -5,7 +5,7 @@ SOURCES = main.cpp board.cpp stack.cpp
 OBJECTS = $(addprefix $(BUILD_DIR)/, $(SOURCES:.cpp=.o))
 
 CXX = g++
-CXXFLAGS = -Wall -Wextra -std=c++11
+CXXFLAGS = -Wall -Wextra -std=c++17
 
 all: $(EXECUTABLE)
 

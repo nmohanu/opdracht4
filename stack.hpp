@@ -13,6 +13,7 @@ struct Turn
     Player* player;
     Turn* next;
 
+    // Constructor.
     Turn(Player* player, int x, int y) : player(player), x(x), y(y)
     {
         next = nullptr;

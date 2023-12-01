@@ -17,16 +17,22 @@ int ask_x_coordinate();
 // Ask user for single char response.
 char ask_char();
 
+// Human player makes turn.
 void human_turn(Board&, Player&);
 
+// Computer makes turn.
 void computer_turn(Board&, Player&);
 
+// Set player to pc or human.
 void set_player_type(Player&);
 
+// Check if a turn is valid.
 bool check_turn_validity(int, int, Board&);
 
+// register turn in turn stack.
 void register_turn(Board&, Player&, int, int);
 
+// Undo a certain amount of turns.
 void take_back_turn(Board&);
 
 // Main
@@ -70,6 +76,7 @@ Board initialize_board()
     return board;
 }
 
+// Ask single char input.
 char ask_char()
 {
     char i;
@@ -129,7 +136,9 @@ void human_turn(Board& board, Player& current_player)
     int x = ask_x_coordinate();
     if(char(x + 'A') == 't')
     {
+        // Player takes back turns.
         take_back_turn(board);
+        // Same player's turn again.
         human_turn(board, current_player);
     }
     else {
@@ -151,6 +160,7 @@ void human_turn(Board& board, Player& current_player)
     }
 }
 
+// Computer makes a turn.
 void computer_turn(Board& board, Player& current_player)
 {
     int x = rand() % board.get_width();  
@@ -192,12 +202,14 @@ bool check_turn_validity(int x, int y, Board& board)
     }
 }
 
+// Save turn in the stack.
 void register_turn(Board& board, Player& player, int x, int y)
 {
     Turn* turn = new Turn(&player, x, y);
     board.turns.push(turn);
 }
 
+// Undo an amount of turns.
 void take_back_turn(Board& board)
 {
     std::cout << "How many turns would you like to go back?" << std::endl;

@@ -5,12 +5,14 @@
             first_out = nullptr;
         }
 
+    // Put a turn in the stack.
     void Turn_Queue::push(Turn* turn)
     {
         turn->next = first_out;
         first_out = turn;
     }
 
+    // Delete the first out entry.
     void Turn_Queue::delete_first_out()
     {
         if(!this->is_empty())
@@ -21,6 +23,7 @@
         }
     }
 
+    // Check if stack is empty.
     bool Turn_Queue::is_empty()
     {
         return (first_out == nullptr);
