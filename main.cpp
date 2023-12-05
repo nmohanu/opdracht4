@@ -35,6 +35,9 @@ void register_turn(Board&, Player&, int, int);
 // Undo a certain amount of turns.
 void take_back_turn(Board&);
 
+// Print turns memory.
+void print_turns(Board&);
+
 // Main
 int main()
 {
@@ -126,6 +129,24 @@ void game_loop(Board& board)
         }
 
         turn_count++;
+
+        // Print turn memory after player's turn.
+        if(turn_count%2 == 0)
+        {
+            print_turns(board);
+        }
+    }
+}
+
+void print_turns(Board& board)
+{
+    std::cout << "Moves in memory: " << std::endl;
+    Turn* turn = board.turns.first_out;
+    while(turn != nullptr)
+    {
+        std::cout << char(turn->x + 'A') << turn->y << " by player: " << turn->player << std::endl;
+        std::cout << "tile color: " << board.get_tile(turn->x, turn->y)->color << std::endl;
+        turn = turn->next;
     }
 }
 
@@ -157,6 +178,7 @@ void human_turn(Board& board, Player& current_player)
         }
 
         register_turn(board, current_player, x, y);
+        
     }
 }
 
