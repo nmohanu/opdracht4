@@ -122,7 +122,7 @@ void Board::player_takes_turn(int player_idx)
 void Board::human_takes_turn(Player& player)
 {
     // Turn info
-    std::cout << "Current turn: " << ((current_turn) / 2) + 1 << '\n';
+    std::cout << "Current turn: " << current_turn + 1 << '\n';
     std::cout << "Current player's turn: Player "
         << current_turn % 2 + 1 << '\n';
 
@@ -135,6 +135,16 @@ void Board::human_takes_turn(Player& player)
 
     if(x + 'a' == 't')
     {
+        if (current_turn < 2)
+        {
+            std::cout
+                << "You may only undo your turn after the second turn.\n";
+            
+            // Ask again.
+            human_takes_turn(player);
+            return;
+        }
+
         // Player takes back turns.
         undo_turn();
 
