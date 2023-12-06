@@ -1,11 +1,13 @@
 #include <iostream>
 #include "board.hpp"
+#include "input.hpp"
 
 Board::Board(){};
 
-Board::Board
-    (int height, int width, int game_amount, Player player_1, Player player_2, int in_a_row) 
-    : height(height), width(width), game_amount(game_amount), player_1(player_1), player_2(player_2), in_a_row(in_a_row)
+Board::Board(int height, int width, int game_amount, Player player_1,
+    Player player_2, int in_a_row) 
+: height(height), width(width), game_amount(game_amount),
+    players { player_1, player_2 }, in_a_row(in_a_row)
 {
     // // Initiate tiles
     Tile* first_in_row;
@@ -73,32 +75,6 @@ Board::~Board()
     // TODO
 }
 
-// Getters
-int Board::get_game_amount()
-{
-    return game_amount;
-}
-
-Player Board::get_player_1()
-{
-    return player_1;
-}
-
-Player Board::get_player_2()
-{
-    return player_2;
-}
-
-int Board::get_width()
-{
-    return width;
-}
-
-int Board::get_height()
-{
-    return height;
-}
-
 // Return a tile that is x steps to the right of top left tile 
 // and y steps below top left tile.
 Tile* Board::get_tile(int x, int y)
@@ -119,6 +95,168 @@ Tile* Board::get_tile(int x, int y)
     }
 
     return current;
+}
+
+void Board::set_tile(Player& player, int x, int y)
+{
+    // Toggle tile.
+    get_tile(x, y)->color = player.color;
+
+    // Append to queue.
+    turn_stack.push(new Turn(&player, x, y));
+}
+
+void Board::player_takes_turn(int player_idx)
+{
+    Player& player = players[player_idx];
+
+    if (player.is_human) human_takes_turn(player);
+    else computer_takes_turn(player);
+
+    // Print turn memory after player's turn.
+    if (player.is_human) print_turn_queue();
+
+    current_turn++;
+}
+
+void Board::human_takes_turn(Player& player)
+{
+    // Turn info
+    std::cout << "Current turn: " << ((current_turn) / 2) + 1 << '\n';
+    std::cout << "Current player's turn: Player "
+        << current_turn % 2 + 1 << '\n';
+
+    print();
+
+    std::cout
+        << "Select x coordinate or type 't' to go back a turn:\n";
+
+    int x = ask_x_coordinate();
+
+    if(x + 'a' == 't')
+    {
+        // Player takes back turns.
+        undo_turn();
+
+        // Same player's turn again.
+        human_takes_turn(player);
+        return;
+    }
+    else
+    {
+        std::cout << "Select y coordinate:\n";
+
+        int y = ask_int() - 1;
+
+        if(check_turn_validity(x, y))
+        {
+            set_tile(player, x, y);
+        }
+        else
+        {
+            std::cout
+                << "This tile is already taken! Please try again.\n";
+
+            // Try again
+            human_takes_turn(player);
+            return;
+        }
+    }
+}
+
+void Board::computer_takes_turn(Player& player)
+{
+    int x = rand() % get_width();  
+    int y = rand() % get_height();  
+
+    if(check_turn_validity(x, y))
+    {
+        set_tile(player, x, y);
+
+        std::cout << "Computer choose: " << char(x + 'A') << x <<'\n';
+    }
+    else
+    {
+        computer_takes_turn(player);
+        return;
+    }
+}
+
+void Board::undo_turn()
+{
+    std::cout << "How many turns would you like to go back?\n";
+    std::cout << "Note: 1 turn takes back the previous turn of BOTH "
+        "players.\n";
+
+    int turns_to_take_back = ask_int();
+
+    int turns_left = 2 * turns_to_take_back;
+
+    while (turns_left > 0)
+    {
+        if(!turn_stack.is_empty())
+        {
+            Turn* turn = turn_stack.pop();
+
+            get_tile(turn->x, turn->y)->color = '_';
+
+            delete turn;
+
+            turns_left--;
+        }
+        else 
+        {
+            print();
+
+            std::cout << "You selected more turns than possible, but "
+                "we took back the maximum amount of turns for you.\n";
+
+            return;
+        }
+    }
+
+    print();
+
+    std::cout << "We took back " << turns_to_take_back
+        << " turns back for you.\n";
+}
+
+// Check if a tile is already taken.
+bool Board::check_turn_validity(int x, int y)
+{
+    return get_tile(x, y)->color != get_player_1().color 
+        && get_tile(x, y)->color != get_player_2().color;
+}
+
+// Getters
+int Board::get_game_amount()
+{
+    return game_amount;
+}
+
+Player& Board::get_player_1()
+{
+    return players[0];
+}
+
+Player& Board::get_player_2()
+{
+    return players[1];
+}
+
+int Board::get_width()
+{
+    return width;
+}
+
+int Board::get_height()
+{
+    return height;
+}
+
+int Board::get_current_turn()
+{
+    return current_turn;
 }
 
 // Print the board
@@ -163,5 +301,25 @@ void Board::print()
             std::cout << ' ' << get_tile(x, y)->color << ' ';
         }
         std::cout << '\n';
+    }
+}
+
+void Board::print_turn_queue()
+{
+    std::cout << "Moves in memory:\n";
+
+    Turn* turn = turn_stack.top;
+
+    while(turn != nullptr)
+    {
+        std::cout
+            << char(turn->x + 'A') << turn->y << " by player: "
+            << turn->player << '\n';
+
+        std::cout
+            << "tile color: " << get_tile(turn->x, turn->y)->color
+            << '\n';
+
+        turn = turn->below;
     }
 }

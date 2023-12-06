@@ -1,4 +1,7 @@
-#include "stack.hpp"
+#pragma once
+
+#include "player.hpp"
+#include "turn.hpp"
 
 struct Tile
 {
@@ -9,31 +12,46 @@ struct Tile
 
 class Board
 {
-private:
     Tile* top_left_tile;
 
     int height;
     int width;
     int game_amount;
     int in_a_row;
-    Player player_1;
-    Player player_2;
-    
+    Player players[2];
+
+    int current_turn = 0;
+
+    void set_tile(Player& player, int x, int y);
+
+    void human_takes_turn(Player& player);
+    void computer_takes_turn(Player& player);
+
+    void undo_turn();
+    bool check_turn_validity(int x, int y);
 
 public:
     Board();
-    Board(int width, int height, int game_amount, Player player_1, Player player_2, int in_a_row);
+
+    Board(int width, int height, int game_amount, Player player_1,
+        Player player_2, int in_a_row);
+
     ~Board(); 
 
     Tile* get_tile(int x, int y);
 
+    void player_takes_turn(int player_idx);
+
     void print();
-    Turn_Queue turns;
+    void print_turn_queue();
+
+    TurnStack turn_stack;
 
     // Getters
     int get_game_amount();
     int get_width();
     int get_height();
-    Player get_player_1();
-    Player get_player_2();
+    int get_current_turn();
+    Player& get_player_1();
+    Player& get_player_2();
 };
