@@ -147,7 +147,7 @@ void Board::human_takes_turn(Player& player, Board& board)
         }
 
         // Player takes back turns.
-        undo_turn(board);
+        undo_turn(board, false);
 
         // Same player's turn again.
         human_takes_turn(player, board);
@@ -195,7 +195,7 @@ void Board::computer_takes_turn(Player& player)
 
 void Board::undo_turn(Board& board, bool clear_all)
 {
-    int turns_left
+    int turns_left;
 
     if(!clear_all)
     {
@@ -206,7 +206,7 @@ void Board::undo_turn(Board& board, bool clear_all)
     } 
     else
     {
-        turns_left = turns = board.current_turn;
+        turns_left = board.current_turn;
     }
 
     while (turns_left > 0)
@@ -235,7 +235,7 @@ void Board::undo_turn(Board& board, bool clear_all)
 
     print();
 
-    std::cout << "We took back " << turns_to_take_back
+    std::cout << "We took back " << turns_left
         << " turns back for you.\n";
 }
 
@@ -349,7 +349,7 @@ void Board::check_if_won(Board& board)
 
     for(int i = 0; i < 8; i++)
     {
-        max_in_a_row = std::max(max_in_a_row, amount_in_a_row(board, tile, i));
+        max_in_a_row = std::max(max_in_a_row, amount_in_a_row(tile, i));
     }
     if(max_in_a_row == board.in_a_row)
     {
@@ -357,13 +357,13 @@ void Board::check_if_won(Board& board)
     }
 }
 
-int amount_in_a_row(Board& board, Tile* tile, int direction)
+int Board::amount_in_a_row(Tile* tile, int direction)
 {
     int in_a_row = 0;
     while (tile->neighbors[direction] != nullptr)
     {
         in_a_row++;
-        tile = tile.neighbors[direction];
+        tile = tile->neighbors[direction];
     }
     return in_a_row;
 }
@@ -371,13 +371,13 @@ int amount_in_a_row(Board& board, Tile* tile, int direction)
 void Board::process_win(Board& board)
 {
     Player* winner = board.turn_stack.top->player;
-    winner.wins++;
-    std::cout << "Congratulations player " << board.get_current_turn %2 << " you won!";
+    winner->wins++;
+    std::cout << "Congratulations player " << board.get_current_turn() %2 << " you won!";
     board.game_amount--;
     clear_board(board);
 }
 
-void clear_board(Board& board)
+void Board::clear_board(Board& board)
 {
-    board.undo_turn(true);
+    board.undo_turn(board, true);
 }

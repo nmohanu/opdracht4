@@ -48,7 +48,7 @@ int main()
     std::cout << "The games are over!" << std::endl;
     std::cout << "Player 1: " << board.get_player_1().wins << "wins." << std::endl;
     std::cout << "Player 2: " << board.get_player_2().wins << "wins." << std::endl;
-    for(int i = 0; i < board.turn_amount_of_games.length; i++)
+    for(int i = 0; i < game_amount; i++)
     {
         std::cout << "Game " << i << " took " << board.turn_amount_of_games[i] << "turns." << std::endl;
     }
