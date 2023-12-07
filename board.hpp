@@ -20,7 +20,8 @@ class Board
     int in_a_row;
     Player players[2];
 
-
+    int calculate_possible_matches(Board& board);
+    bool is_full(Board& new_board);
 
     int current_turn = 0;
 
@@ -47,7 +48,7 @@ public:
 
     void player_takes_turn(int player_idx, Board& board);
 
-    void check_if_won(Board&);
+    bool check_if_won(Board&);
     int amount_in_a_row(Tile*, int);
     void process_win(Board&);
     void clear_board(Board& board);

@@ -131,6 +131,8 @@ void Board::human_takes_turn(Player& player, Board& board)
 
     std::cout
         << "Select x coordinate or type 't' to go back a turn:\n";
+        std::cout
+        << "If you want to calculate the amount of possible games from this position, type 'p':\n";
 
     int x = ask_x_coordinate();
 
@@ -152,6 +154,11 @@ void Board::human_takes_turn(Player& player, Board& board)
         // Same player's turn again.
         human_takes_turn(player, board);
         return;
+    }
+    else if (x + 'a' == 'p')
+    {
+        std::cout << "Possible games: " << calculate_possible_matches(board) << std::endl;
+        human_takes_turn(player, board);
     }
     else
     {
@@ -346,7 +353,7 @@ void Board::print_turn_queue()
     }
 }
 
-void Board::check_if_won(Board& board)
+bool Board::check_if_won(Board& board)
 {
     int max_in_a_row = 0;
     Tile* tile = board.get_tile(board.turn_stack.top->x, board.turn_stack.top->y);
@@ -358,7 +365,9 @@ void Board::check_if_won(Board& board)
     if(max_in_a_row == board.in_a_row)
     {
         process_win(board);
+        return true;
     }
+    return false;
 }
 
 int Board::amount_in_a_row(Tile* tile, int direction)
@@ -400,3 +409,44 @@ void Board::clear_board(Board& board)
 {
     board.undo_turn(board, true);
 }
+
+int Board::calculate_possible_matches(Board& board)
+{
+    Board new_board = board;
+
+    if(board.is_full(board) || board.check_if_won(board))
+    {
+        return 1;
+    }
+    else
+    {
+
+        for (int y = 0; y < new_board.height; y++)
+        {
+            for (int x = 0; y < new_board.width; x++)
+            {
+                if(check_turn_validity(x, y))
+                {
+                    new_board.get_tile(x, y)->color = '#';
+                }
+            }
+        }
+    }
+    return (calculate_possible_matches(new_board) + calculate_possible_matches(board));
+}
+
+bool Board::is_full(Board& new_board)
+{
+    for (int y = 0; y < new_board.height; y++)
+    {
+        for (int x = 0; y < new_board.width; x++)
+        {
+            if(new_board.get_tile(x, y)->color == '_')
+            {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
