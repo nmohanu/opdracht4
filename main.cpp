@@ -24,7 +24,7 @@ int main()
         << "Choose the amount of games you would like to play.\n";
     int game_amount = ask_int();
     std::cout << "How many in a row to win?\n";
-    int in_a_row = ask_int();
+    int in_a_row = ask_int(std::max(height, width));
 
     // Player 1 info.
     std::cout << "Player 1: Computer or Human? C/H\n";
@@ -45,6 +45,14 @@ int main()
 
     game_loop(board);
 
+    std::cout << "The games are over!" << std::endl;
+    std::cout << "Player 1: " << board.get_player_1().wins << "wins." << std::endl;
+    std::cout << "Player 2: " << board.get_player_2().wins << "wins." << std::endl;
+    for(int i = 0; i < board.turn_amount_of_games.length; i++)
+    {
+        std::cout << "Game " << i << " took " << board.turn_amount_of_games[i] << "turns." << std::endl;
+    }
+
     return 0;
 }
 
@@ -53,7 +61,8 @@ void game_loop(Board& board)
 {
     while (board.get_game_amount() > 0)
     {
-        board.player_takes_turn(board.get_current_turn() % 2);
+        board.player_takes_turn(board.get_current_turn() % 2, board);
+        board.check_if_won(board);
     }
 }
 
@@ -65,5 +74,10 @@ void set_player_type(Player& player)
     if(player_type == 'C' || player_type == 'c')
     {
         player.is_human = false;
+    }
+    else if(player_type != 'H' || player_type != 'h')
+    {
+        std::cout << "Sorry, incorrect response!" << std::endl;
+        set_player_type(player);
     }
 }

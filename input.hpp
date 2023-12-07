@@ -3,6 +3,9 @@
 // Ask user for int input.
 int ask_int();
 
+// Ask user for int input with a maximum.
+int ask_int(int max);
+
 // Ask user for x coordinate (y coordinate is an int so we use ask_int() for that).
 int ask_x_coordinate();
 

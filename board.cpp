@@ -9,6 +9,7 @@ Board::Board(int height, int width, int game_amount, Player player_1,
 : height(height), width(width), game_amount(game_amount),
     players { player_1, player_2 }, in_a_row(in_a_row)
 {
+    turn_amount_of_games = new int[game_amount];
     // // Initiate tiles
     Tile* first_in_row;
     Tile* previous;
@@ -106,11 +107,11 @@ void Board::set_tile(Player& player, int x, int y)
     turn_stack.push(new Turn(&player, x, y));
 }
 
-void Board::player_takes_turn(int player_idx)
+void Board::player_takes_turn(int player_idx, Board& board)
 {
     Player& player = players[player_idx];
 
-    if (player.is_human) human_takes_turn(player);
+    if (player.is_human) human_takes_turn(player, board);
     else computer_takes_turn(player);
 
     // Print turn memory after player's turn.
@@ -119,7 +120,7 @@ void Board::player_takes_turn(int player_idx)
     current_turn++;
 }
 
-void Board::human_takes_turn(Player& player)
+void Board::human_takes_turn(Player& player, Board& board)
 {
     // Turn info
     std::cout << "Current turn: " << current_turn + 1 << '\n';
@@ -141,22 +142,22 @@ void Board::human_takes_turn(Player& player)
                 << "You may only undo your turn after the second turn.\n";
             
             // Ask again.
-            human_takes_turn(player);
+            human_takes_turn(player, board);
             return;
         }
 
         // Player takes back turns.
-        undo_turn();
+        undo_turn(board);
 
         // Same player's turn again.
-        human_takes_turn(player);
+        human_takes_turn(player, board);
         return;
     }
     else
     {
         std::cout << "Select y coordinate:\n";
 
-        int y = ask_int() - 1;
+        int y = ask_int(height) - 1;
 
         if(check_turn_validity(x, y))
         {
@@ -168,7 +169,7 @@ void Board::human_takes_turn(Player& player)
                 << "This tile is already taken! Please try again.\n";
 
             // Try again
-            human_takes_turn(player);
+            human_takes_turn(player, board);
             return;
         }
     }
@@ -192,15 +193,21 @@ void Board::computer_takes_turn(Player& player)
     }
 }
 
-void Board::undo_turn()
+void Board::undo_turn(Board& board, bool clear_all)
 {
-    std::cout << "How many turns would you like to go back?\n";
-    std::cout << "Note: 1 turn takes back the previous turn of BOTH "
+    int turns_left
+
+    if(!clear_all)
+    {
+        std::cout << "How many turns would you like to go back?\n";
+        std::cout << "Note: 1 turn takes back the previous turn of BOTH "
         "players.\n";
-
-    int turns_to_take_back = ask_int();
-
-    int turns_left = 2 * turns_to_take_back;
+        turns_left = 2 * ask_int();
+    } 
+    else
+    {
+        turns_left = turns = board.current_turn;
+    }
 
     while (turns_left > 0)
     {
@@ -213,6 +220,7 @@ void Board::undo_turn()
             delete turn;
 
             turns_left--;
+            board.current_turn--;
         }
         else 
         {
@@ -332,4 +340,44 @@ void Board::print_turn_queue()
 
         turn = turn->below;
     }
+}
+
+void Board::check_if_won(Board& board)
+{
+    int max_in_a_row = 0;
+    Tile* tile = board.get_tile(board.turn_stack.top->x, board.turn_stack.top->y);
+
+    for(int i = 0; i < 8; i++)
+    {
+        max_in_a_row = std::max(max_in_a_row, amount_in_a_row(board, tile, i));
+    }
+    if(max_in_a_row == board.in_a_row)
+    {
+        process_win(board);
+    }
+}
+
+int amount_in_a_row(Board& board, Tile* tile, int direction)
+{
+    int in_a_row = 0;
+    while (tile->neighbors[direction] != nullptr)
+    {
+        in_a_row++;
+        tile = tile.neighbors[direction];
+    }
+    return in_a_row;
+}
+
+void Board::process_win(Board& board)
+{
+    Player* winner = board.turn_stack.top->player;
+    winner.wins++;
+    std::cout << "Congratulations player " << board.get_current_turn %2 << " you won!";
+    board.game_amount--;
+    clear_board(board);
+}
+
+void clear_board(Board& board)
+{
+    board.undo_turn(true);
 }

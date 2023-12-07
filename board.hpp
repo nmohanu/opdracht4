@@ -19,15 +19,17 @@ class Board
     int game_amount;
     int in_a_row;
     Player players[2];
+    int *turn_amount_of_games;
+
 
     int current_turn = 0;
 
     void set_tile(Player& player, int x, int y);
 
-    void human_takes_turn(Player& player);
+    void human_takes_turn(Player& player, Board& board);
     void computer_takes_turn(Player& player);
 
-    void undo_turn();
+    void undo_turn(Board& board, boal clear_all);
     bool check_turn_validity(int x, int y);
 
 public:
@@ -40,7 +42,12 @@ public:
 
     Tile* get_tile(int x, int y);
 
-    void player_takes_turn(int player_idx);
+    void player_takes_turn(int player_idx, Board& board);
+
+    void check_if_won(Board&);
+    int amount_in_a_row(Board&, Tile*, int);
+    void process_win(Board&);
+    void clear_board(Board& board);
 
     void print();
     void print_turn_queue();
