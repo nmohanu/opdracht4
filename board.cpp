@@ -233,10 +233,13 @@ void Board::undo_turn(Board& board, bool clear_all)
         }
     }
 
-    print();
-
-    std::cout << "We took back " << turns_left
+    if(!clear_all)
+    {
+        print();
+        std::cout << "We took back " << turns_left
         << " turns back for you.\n";
+    }
+
 }
 
 // Check if a tile is already taken.
@@ -327,18 +330,19 @@ void Board::print_turn_queue()
     std::cout << "Moves in memory:\n";
 
     Turn* turn = turn_stack.top;
-
+    int i = 0;
     while(turn != nullptr)
     {
         std::cout
-            << char(turn->x + 'A') << turn->y << " by player: "
-            << turn->player << '\n';
+            << char(turn->x + 'A') << (turn->y + 1) << " by player: "
+            << i % 2 + 1;
 
         std::cout
-            << "tile color: " << get_tile(turn->x, turn->y)->color
+            << " with tile color: " << get_tile(turn->x, turn->y)->color
             << '\n';
 
         turn = turn->below;
+        i++;
     }
 }
 
@@ -349,7 +353,7 @@ void Board::check_if_won(Board& board)
 
     for(int i = 0; i < 8; i++)
     {
-        max_in_a_row = std::max(max_in_a_row, amount_in_a_row(tile, i));
+        max_in_a_row = std::max(max_in_a_row, (amount_in_a_row(tile, i) + amount_in_a_row(tile, (i + 4) % 8) + 1));
     }
     if(max_in_a_row == board.in_a_row)
     {
@@ -362,8 +366,16 @@ int Board::amount_in_a_row(Tile* tile, int direction)
     int in_a_row = 0;
     while (tile->neighbors[direction] != nullptr)
     {
-        in_a_row++;
-        tile = tile->neighbors[direction];
+        if(tile->neighbors[direction]->color == tile->color)
+        {
+            in_a_row++;
+            tile = tile->neighbors[direction];
+        }
+        else
+        {
+            break;
+        }
+
     }
     return in_a_row;
 }
@@ -372,8 +384,15 @@ void Board::process_win(Board& board)
 {
     Player* winner = board.turn_stack.top->player;
     winner->wins++;
-    std::cout << "Congratulations player " << board.get_current_turn() %2 << " you won!";
+    std::cout << "Congratulations player " << board.get_current_turn() %2 << " you won!" << std::endl;
     board.game_amount--;
+
+    int i = 0;
+    while(board.turn_amount_of_games[i] != 0)
+    {
+        i++;
+    }
+    board.turn_amount_of_games[i] = board.current_turn;
     clear_board(board);
 }
 

@@ -33,7 +33,7 @@ class Board
     bool check_turn_validity(int x, int y);
 
 public:
-    int *turn_amount_of_games;
+    int *turn_amount_of_games = {};
     void undo_turn(Board& board, bool clear_all);
 
     Board();

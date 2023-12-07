@@ -46,11 +46,11 @@ int main()
     game_loop(board);
 
     std::cout << "The games are over!" << std::endl;
-    std::cout << "Player 1: " << board.get_player_1().wins << "wins." << std::endl;
-    std::cout << "Player 2: " << board.get_player_2().wins << "wins." << std::endl;
+    std::cout << "Player 1: " << board.get_player_1().wins << " wins." << std::endl;
+    std::cout << "Player 2: " << board.get_player_2().wins << " wins." << std::endl;
     for(int i = 0; i < game_amount; i++)
     {
-        std::cout << "Game " << i << " took " << board.turn_amount_of_games[i] << "turns." << std::endl;
+        std::cout << "Game " << i << " took " << board.turn_amount_of_games[i] << " turns." << std::endl;
     }
 
     return 0;
@@ -75,7 +75,7 @@ void set_player_type(Player& player)
     {
         player.is_human = false;
     }
-    else if(player_type != 'H' || player_type != 'h')
+    else if(player_type != 'H' && player_type != 'h')
     {
         std::cout << "Sorry, incorrect response!" << std::endl;
         set_player_type(player);
