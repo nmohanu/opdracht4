@@ -61,8 +61,9 @@ void game_loop(Board& board)
 {
     while (board.get_game_amount() > 0)
     {
-        board.player_takes_turn(board.get_current_turn() % 2, board);
-        board.check_if_won(board);
+        board.player_takes_turn(board.get_current_turn() % 2);
+        if (!board.check_stalemate())
+            board.check_if_won();
     }
 }
 

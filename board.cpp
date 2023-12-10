@@ -107,11 +107,17 @@ void Board::set_tile(Player& player, int x, int y)
     turn_stack.push(new Turn(&player, x, y));
 }
 
-void Board::player_takes_turn(int player_idx, Board& board)
+void Board::player_takes_turn(int player_idx)
 {
+    if (is_full())
+    {
+        is_stalemate = true;
+        return;
+    }
+
     Player& player = players[player_idx];
 
-    if (player.is_human) human_takes_turn(player, board);
+    if (player.is_human) human_takes_turn(player);
     else computer_takes_turn(player);
 
     // Print turn memory after player's turn.
@@ -120,7 +126,7 @@ void Board::player_takes_turn(int player_idx, Board& board)
     current_turn++;
 }
 
-void Board::human_takes_turn(Player& player, Board& board)
+void Board::human_takes_turn(Player& player)
 {
     // Turn info
     std::cout << "Current turn: " << current_turn + 1 << '\n';
@@ -144,21 +150,21 @@ void Board::human_takes_turn(Player& player, Board& board)
                 << "You may only undo your turn after the second turn.\n";
             
             // Ask again.
-            human_takes_turn(player, board);
+            human_takes_turn(player);
             return;
         }
 
         // Player takes back turns.
-        undo_turn(board, false);
+        undo_turn(false);
 
         // Same player's turn again.
-        human_takes_turn(player, board);
+        human_takes_turn(player);
         return;
     }
     else if (x + 'a' == 'p')
     {
-        std::cout << "Possible games: " << calculate_possible_matches(board) << std::endl;
-        human_takes_turn(player, board);
+        std::cout << "Possible games: " << calculate_possible_matches(*this) << std::endl;
+        human_takes_turn(player);
     }
     else
     {
@@ -176,7 +182,7 @@ void Board::human_takes_turn(Player& player, Board& board)
                 << "This tile is already taken! Please try again.\n";
 
             // Try again
-            human_takes_turn(player, board);
+            human_takes_turn(player);
             return;
         }
     }
@@ -184,23 +190,24 @@ void Board::human_takes_turn(Player& player, Board& board)
 
 void Board::computer_takes_turn(Player& player)
 {
-    int x = rand() % get_width();  
-    int y = rand() % get_height();  
+    bool taking_turn = true;
 
-    if(check_turn_validity(x, y))
+    while (taking_turn)
     {
-        set_tile(player, x, y);
+        int x = rand() % get_width();  
+        int y = rand() % get_height();  
 
-        std::cout << "Computer choose: " << char(x + 'A') << x <<'\n';
-    }
-    else
-    {
-        computer_takes_turn(player);
-        return;
+        if(check_turn_validity(x, y))
+        {
+            set_tile(player, x, y);
+
+            std::cout << "Computer choose: " << char(x + 'A') << x <<'\n';
+            taking_turn = false;
+        }
     }
 }
 
-void Board::undo_turn(Board& board, bool clear_all)
+void Board::undo_turn(bool clear_all)
 {
     int turns_left;
 
@@ -213,7 +220,7 @@ void Board::undo_turn(Board& board, bool clear_all)
     } 
     else
     {
-        turns_left = board.current_turn;
+        turns_left = current_turn;
     }
 
     while (turns_left > 0)
@@ -227,7 +234,7 @@ void Board::undo_turn(Board& board, bool clear_all)
             delete turn;
 
             turns_left--;
-            board.current_turn--;
+            current_turn--;
         }
         else 
         {
@@ -254,6 +261,24 @@ bool Board::check_turn_validity(int x, int y)
 {
     return get_tile(x, y)->color != get_player_1().color 
         && get_tile(x, y)->color != get_player_2().color;
+}
+
+int Board::get_empty_tile_count()
+{
+    int empty_count;
+
+    for (int y = 0; y < height; y++)
+    {
+        for (int x = 0; x < width; x++)
+        {
+            if (get_tile(x, y)->color == EMPTY_TILE_CHAR)
+            {
+                empty_count++;
+            }
+        }
+    }
+
+    return empty_count;
 }
 
 // Getters
@@ -285,6 +310,11 @@ int Board::get_height()
 int Board::get_current_turn()
 {
     return current_turn;
+}
+
+bool Board::get_is_stalemate()
+{
+    return is_stalemate;
 }
 
 // Print the board
@@ -353,18 +383,32 @@ void Board::print_turn_queue()
     }
 }
 
-bool Board::check_if_won(Board& board)
+bool Board::check_stalemate()
+{
+    if (is_stalemate)
+    {
+        std::cout << "Stalemate encountered! Restarting round.\n";
+        clear_board();
+        is_stalemate = false;
+
+        return true;
+    }
+
+    return false;
+}
+
+bool Board::check_if_won()
 {
     int max_in_a_row = 0;
-    Tile* tile = board.get_tile(board.turn_stack.top->x, board.turn_stack.top->y);
+    Tile* tile = get_tile(turn_stack.top->x, turn_stack.top->y);
 
     for(int i = 0; i < 8; i++)
     {
         max_in_a_row = std::max(max_in_a_row, (amount_in_a_row(tile, i) + amount_in_a_row(tile, (i + 4) % 8) + 1));
     }
-    if(max_in_a_row == board.in_a_row)
+    if(max_in_a_row == in_a_row)
     {
-        process_win(board);
+        process_win();
         return true;
     }
     return false;
@@ -389,43 +433,42 @@ int Board::amount_in_a_row(Tile* tile, int direction)
     return in_a_row;
 }
 
-void Board::process_win(Board& board)
+void Board::process_win()
 {
-    Player* winner = board.turn_stack.top->player;
+    Player* winner = turn_stack.top->player;
     winner->wins++;
-    std::cout << "Congratulations player " << board.get_current_turn() %2 << " you won!" << std::endl;
-    board.game_amount--;
+    std::cout << "Congratulations player " << get_current_turn() %2 << " you won!" << std::endl;
+    game_amount--;
 
     int i = 0;
-    while(board.turn_amount_of_games[i] != 0)
+    while(turn_amount_of_games[i] != 0)
     {
         i++;
     }
-    board.turn_amount_of_games[i] = board.current_turn;
-    clear_board(board);
+    turn_amount_of_games[i] = current_turn;
+    clear_board();
 }
 
-void Board::clear_board(Board& board)
+void Board::clear_board()
 {
-    board.undo_turn(board, true);
+    undo_turn(true);
 }
 
 int Board::calculate_possible_matches(Board& board)
 {
     Board new_board = board;
 
-    if(board.is_full(board) || board.check_if_won(board))
+    if(board.is_full() || board.check_if_won())
     {
         return 1;
     }
     else
     {
-
         for (int y = 0; y < new_board.height; y++)
         {
-            for (int x = 0; y < new_board.width; x++)
+            for (int x = 0; x < new_board.width; x++)
             {
-                if(check_turn_validity(x, y))
+                if(board.check_turn_validity(x, y))
                 {
                     new_board.get_tile(x, y)->color = '#';
                 }
@@ -435,13 +478,13 @@ int Board::calculate_possible_matches(Board& board)
     return (calculate_possible_matches(new_board) + calculate_possible_matches(board));
 }
 
-bool Board::is_full(Board& new_board)
+bool Board::is_full()
 {
-    for (int y = 0; y < new_board.height; y++)
+    for (int y = 0; y < height; y++)
     {
-        for (int x = 0; y < new_board.width; x++)
+        for (int x = 0; x < width; x++)
         {
-            if(new_board.get_tile(x, y)->color == '_')
+            if(get_tile(x, y)->color == EMPTY_TILE_CHAR)
             {
                 return false;
             }
@@ -449,4 +492,3 @@ bool Board::is_full(Board& new_board)
     }
     return true;
 }
-

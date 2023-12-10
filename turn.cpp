@@ -26,6 +26,8 @@ Turn* TurnStack::pop()
 
         return temp;
     }
+
+    return nullptr;
 }
 
 // Check if stack is empty.

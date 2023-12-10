@@ -3,9 +3,11 @@
 #include "player.hpp"
 #include "turn.hpp"
 
+#define EMPTY_TILE_CHAR '_'
+
 struct Tile
 {
-    char color = '_';
+    char color = EMPTY_TILE_CHAR;
     // Set neighbours, {} sets it to nullptr's (in c++ 11 and later).
     Tile* neighbors[8] {};
 };
@@ -20,22 +22,24 @@ class Board
     int in_a_row;
     Player players[2];
 
-    int calculate_possible_matches(Board& board);
-    bool is_full(Board& new_board);
+    bool is_stalemate = false;
+
+    static int calculate_possible_matches(Board& board);
+    bool is_full();
 
     int current_turn = 0;
 
     void set_tile(Player& player, int x, int y);
 
-    void human_takes_turn(Player& player, Board& board);
+    void human_takes_turn(Player& player);
     void computer_takes_turn(Player& player);
 
-
     bool check_turn_validity(int x, int y);
+    int get_empty_tile_count();
 
 public:
     int *turn_amount_of_games = {};
-    void undo_turn(Board& board, bool clear_all);
+    void undo_turn(bool clear_all);
 
     Board();
 
@@ -46,12 +50,13 @@ public:
 
     Tile* get_tile(int x, int y);
 
-    void player_takes_turn(int player_idx, Board& board);
+    void player_takes_turn(int player_idx);
 
-    bool check_if_won(Board&);
+    bool check_stalemate();
+    bool check_if_won();
     int amount_in_a_row(Tile*, int);
-    void process_win(Board&);
-    void clear_board(Board& board);
+    void process_win();
+    void clear_board();
 
     void print();
     void print_turn_queue();
@@ -63,6 +68,7 @@ public:
     int get_width();
     int get_height();
     int get_current_turn();
+    bool get_is_stalemate();
     Player& get_player_1();
     Player& get_player_2();
 };
