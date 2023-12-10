@@ -1,9 +1,0 @@
-# VSCode / Codespaces
-.devcontainer/
-.vscode/
-
-# Building
-build/
-
-# LSP
-.ccls-cache/
