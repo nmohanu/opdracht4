@@ -18,6 +18,7 @@ class Board
 
     int height;
     int width;
+    int total_game_amount;
     int game_amount;
     int in_a_row;
     Player players[2];

@@ -10,6 +10,8 @@ Board::Board(int height, int width, int game_amount, Player player_1,
     players { player_1, player_2 }, in_a_row(in_a_row)
 {
     turn_amount_of_games = new int[game_amount];
+    total_game_amount = game_amount;
+
     // // Initiate tiles
     Tile* first_in_row;
     Tile* previous;
@@ -440,12 +442,7 @@ void Board::process_win()
     std::cout << "Congratulations player " << get_current_turn() %2 << " you won!" << std::endl;
     game_amount--;
 
-    int i = 0;
-    while(turn_amount_of_games[i] != 0)
-    {
-        i++;
-    }
-    turn_amount_of_games[i] = current_turn;
+    turn_amount_of_games[total_game_amount - game_amount - 1] = current_turn;
     clear_board();
 }
 
