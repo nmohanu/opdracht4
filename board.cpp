@@ -9,7 +9,6 @@ Board::Board(int height, int width, int game_amount, Player player_1,
 : height(height), width(width), game_amount(game_amount),
     players { player_1, player_2 }, in_a_row(in_a_row)
 {
-    turn_amount_of_games = new int[game_amount];
     // // Initiate tiles
     Tile* first_in_row;
     Tile* previous;
@@ -201,7 +200,7 @@ void Board::computer_takes_turn(Player& player)
         {
             set_tile(player, x, y);
 
-            std::cout << "Computer choose: " << char(x + 'A') << x <<'\n';
+            //std::cout << "Computer choose: " << char(x + 'A') << x <<'\n';
             taking_turn = false;
         }
     }
@@ -261,24 +260,6 @@ bool Board::check_turn_validity(int x, int y)
 {
     return get_tile(x, y)->color != get_player_1().color 
         && get_tile(x, y)->color != get_player_2().color;
-}
-
-int Board::get_empty_tile_count()
-{
-    int empty_count;
-
-    for (int y = 0; y < height; y++)
-    {
-        for (int x = 0; x < width; x++)
-        {
-            if (get_tile(x, y)->color == EMPTY_TILE_CHAR)
-            {
-                empty_count++;
-            }
-        }
-    }
-
-    return empty_count;
 }
 
 // Getters
@@ -387,7 +368,7 @@ bool Board::check_stalemate()
 {
     if (is_stalemate)
     {
-        std::cout << "Stalemate encountered! Restarting round.\n";
+        //std::cout << "Stalemate encountered! Restarting round.\n";
         clear_board();
         is_stalemate = false;
 
@@ -408,7 +389,6 @@ bool Board::check_if_won()
     }
     if(max_in_a_row == in_a_row)
     {
-        process_win();
         return true;
     }
     return false;
@@ -440,12 +420,6 @@ void Board::process_win()
     std::cout << "Congratulations player " << get_current_turn() %2 << " you won!" << std::endl;
     game_amount--;
 
-    int i = 0;
-    while(turn_amount_of_games[i] != 0)
-    {
-        i++;
-    }
-    turn_amount_of_games[i] = current_turn;
     clear_board();
 }
 

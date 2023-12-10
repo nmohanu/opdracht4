@@ -2,6 +2,8 @@
 #include "board.hpp"
 #include "input.hpp"
 
+#include <fstream>
+
 // The main game loop, this is where the games are played.
 void game_loop(Board&); 
 
@@ -14,43 +16,24 @@ int main()
     // Players.
     Player player_1;
     Player player_2;
-    
-    // Board info.
-    std::cout << "Choose a board height.\n";
-    int height = ask_int();
-    std::cout << "Choose a board width.\n";
-    int width = ask_int();
-    std::cout
-        << "Choose the amount of games you would like to play.\n";
-    int game_amount = ask_int();
-    std::cout << "How many in a row to win?\n";
-    int in_a_row = ask_int(std::max(height, width));
 
-    // Player 1 info.
-    std::cout << "Player 1: Computer or Human? C/H\n";
-    set_player_type(player_1);
-    std::cout
-        << "Player 1: Select a symbol to represent your tiles:\n";
-    player_1.color = ask_char();
+    player_1.color = 'a';
+    player_2.color = 'b';
 
-    // Player 2 info.
-    std::cout << "Player 2: Computer or Human? C/H\n";
-    set_player_type(player_2);
-    std::cout
-        << "Player 2: Select a symbol to represent your tiles:\n";
-    player_2.color = ask_char();
-    
-    Board board
-        (height, width, game_amount, player_1, player_2, in_a_row);
+    player_1.is_human = false;
+    player_2.is_human = false;
 
-    game_loop(board);
+    player_1.wins = 0;
+    player_2.wins = 0;
 
-    std::cout << "The games are over!" << std::endl;
-    std::cout << "Player 1: " << board.get_player_1().wins << " wins." << std::endl;
-    std::cout << "Player 2: " << board.get_player_2().wins << " wins." << std::endl;
-    for(int i = 0; i < game_amount; i++)
+    for (int i = 2; i < 100; i++)
     {
-        std::cout << "Game " << i << " took " << board.turn_amount_of_games[i] << " turns." << std::endl;
+        Board board(i, i, 20, player_1, player_2, i);
+
+        game_loop(board);
+
+        player_1.wins = 0;
+        player_2.wins = 0;
     }
 
     return 0;
@@ -59,12 +42,29 @@ int main()
 // Game loop.
 void game_loop(Board& board)
 {
+    int start_game_amount = board.get_game_amount();
+    int total_turns = 0;
+
     while (board.get_game_amount() > 0)
     {
         board.player_takes_turn(board.get_current_turn() % 2);
         if (!board.check_stalemate())
-            board.check_if_won();
+        {
+            if (board.check_if_won())
+            {
+                total_turns += board.get_current_turn();
+
+                board.process_win();
+            }
+        }
     }
+
+    // Append result to file.
+    float average_turns = ((float) total_turns) / ((float) start_game_amount);
+
+    std::ofstream f("plot.p", std::ios_base::app);
+
+    f << board.get_width() << "\t\t" << average_turns << '\n';
 }
 
 // Set player to human or conmputer.

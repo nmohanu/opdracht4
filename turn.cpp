@@ -3,6 +3,14 @@
 Turn::Turn(Player* player, int x, int y) : player(player), x(x), y(y)
 {}
 
+TurnStack::~TurnStack()
+{
+    while (!is_empty())
+    {
+        delete pop();
+    }
+}
+
 void TurnStack::push(Turn* turn)
 {
     if (top == nullptr)

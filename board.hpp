@@ -23,11 +23,11 @@ class Board
     Player players[2];
 
     bool is_stalemate = false;
+    int current_turn = 0;
 
     static int calculate_possible_matches(Board& board);
-    bool is_full();
 
-    int current_turn = 0;
+    bool is_full();
 
     void set_tile(Player& player, int x, int y);
 
@@ -35,10 +35,8 @@ class Board
     void computer_takes_turn(Player& player);
 
     bool check_turn_validity(int x, int y);
-    int get_empty_tile_count();
 
 public:
-    int *turn_amount_of_games = {};
     void undo_turn(bool clear_all);
 
     Board();

@@ -18,6 +18,8 @@ struct TurnStack
 {
     Turn* top = nullptr;
 
+    ~TurnStack();
+
     // Push a turn on top.
     void push(Turn*);
 
