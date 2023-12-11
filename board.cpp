@@ -75,7 +75,7 @@ Board::Board(int height, int width, int game_amount, Player player_1,
 
 Board::~Board()
 {
-    // TODO
+    delete [] turn_amount_of_games;
 }
 
 // Return a tile that is x steps to the right of top left tile 
